@@ -1,0 +1,97 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The Episodic Learning with CLF for Uncertainty
+% Author: Yang Li
+% Tokyo Institue of Technology
+% Apr 19, 2019
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+clear
+clc
+
+%% Initialization
+% Initialization.m subscript contains the parameters
+Initialization;
+
+%% Control design parameters
+K_p = -2.5; % PD controller P gain
+K_d = -0.375; % PD controller D gain
+n = 2; % number of states
+m = 2; % number of inputs
+Q = eye(n); % Positive definite Q for CARE
+
+%% Simulation parameters
+tstart = 0;
+tfinish = 10;
+dt = 1e-3;
+N = 5000; % numbers of time steps
+
+%% Simulation
+X = X0;
+
+for t = tstart:dt:tfinish % t = 0:dt:N
+    th1 = X(1);
+    th2 = X(2);
+    dth1 = X(3);
+    dth2 = X(4);
+    
+    % System matrix
+    M = [phi1+phi2+2*phi3*cos(th2) phi2+phi3*cos(th2);
+         phi2+phi3*cos(th2) phi2];
+    H = [dth2 dth1+dth2;
+         -dth1 0];
+    D = [d1 0;                      % D=0 in this assignment
+         0 d2];
+    G = g*[m1*l1*cos(th1)+m2*(a1*cos(th1)+l2*cos(th1+th2));
+           m2*l2*cos(th1+th2)];
+
+    % Input
+    tau1 = 0;
+    tau2 = 0;
+    Tau = [tau1; tau2];
+
+    X = X + [dth1; dth2; inv(M)*(Tau - G - (-phi3*sin(th2)*H + D)*[dth1; dth2])]*tc;
+    Xreal = [Xreal; X'];
+    
+    % Output
+    joint1 = [cos(th1);sin(th1)];
+    eof = joint1 + 0.5*[cos(th1+th2);sin(the1)]
+    
+    % visualization
+    figure(1)
+    hold on
+    plot(linspace(Ox,cos(th1)),linspace(Oz,sin(th1)),'Linewidth','2')
+    plot(linspace(cos(th1),cos(th1)+0.5*),linspace(Oz,sin(th1))
+    
+    
+end
+
+%% True & Estimated System
+
+% M H D G
+
+% M_hat H_hat D_hat G_hat
+
+
+
+%% Trajectory data
+% make a trajectory data w.r.t. the time
+% error = output(EOF) - traj
+
+%% System and control definitions
+% the controller we will use in this experiment
+% PD controller, QP controller, Leaning-based controller
+
+%% Input
+% CLF based controller
+
+%% Learning loop
+% please study!!!
+
+
+%% Run experiments in simulation
+% for each controller we have
+% simulation handler.m function!!
+
+%% Visualization
+
+
+
