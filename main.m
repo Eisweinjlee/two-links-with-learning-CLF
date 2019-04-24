@@ -10,13 +10,6 @@ clc
 %% Initialization
 % Initialization.m subscript contains the parameters
 Initialization;
-% initial configuration
-th1 = -pi/4;
-th2 = -pi/4;
-dth1 = 0.0;
-dth2 = 0.0;
-X0 = [th1; th2; dth1; dth2];
-
 
 %% Control design parameters
 K_p = 25;  % PD controller P gain

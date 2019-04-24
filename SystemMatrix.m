@@ -1,4 +1,12 @@
-function [M,H] = ActualSystem(X)
+function [M,H] = SystemMatrix(X)
+
+% function SystemMatrix is to calculate the system matrix M, H, D, G or 
+% another style with only M and H (return can be changed for preference)
+%
+% Input:    X: the state X, 4d real number vector
+%
+% Return:   M: inertial matrix, 2 x 2 real number matrix
+%           H: combined matrix, 2 x 1 real number matrix
 
 global a1 l1 m1 I1 d1 a2 l2 m2 I2 d2
 global phi1 phi2 phi3 g

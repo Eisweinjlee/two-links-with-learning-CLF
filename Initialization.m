@@ -28,3 +28,9 @@ Ox=0;                   % x of the origin
 Oz=0;                   % z of the origin
 g=9.81;                 % gravity
 
+% initial configuration
+th1 = -pi/4;
+th2 = -pi/4;
+dth1 = 0.0;
+dth2 = 0.0;
+X0 = [th1; th2; dth1; dth2];

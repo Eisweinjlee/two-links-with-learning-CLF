@@ -1,7 +1,7 @@
 function X_real = experiment(X0,tstart,dt,tfinish,DesiredValue,K_p,K_d)
 
-global a1 l1 m1 I1 d1 a2 l2 m2 I2 d2
-global phi1 phi2 phi3 g
+% global a1 l1 m1 I1 d1 a2 l2 m2 I2 d2
+% global phi1 phi2 phi3 g
 global Ox Oz
 
 X = X0;
@@ -23,7 +23,7 @@ for t = tstart:dt:tfinish % t = 0:dt:N
     
     % System matrix
     % M*ddq + (-phi3*sin(th2)*H + D)*dq + G = Tau
-    [M,H] = ActualSystem(X);
+    [M,H] = SystemMatrix(X);
     
     % Controller Input
     tau1 = - K_p * (th1 - th1_d(i)) - K_d * (dth1 - dth1_d(i));
@@ -37,8 +37,7 @@ for t = tstart:dt:tfinish % t = 0:dt:N
     
     % Output
 %     joint1 = [Ox;Oz];
-    joint2 = [cos(th1);sin(th1)];
-    EOF = joint2 + 0.5*[cos(th1+th2);sin(th1+th2)];
+    [joint2, EOF] = TwoLinkOutput(X);
     
     EOF_d = [cos(th1_d(i));sin(th1_d(i))]+ ...
     0.5*[cos(th1_d(i)+th2_d(i));sin(th1_d(i)+th2_d(i))];
