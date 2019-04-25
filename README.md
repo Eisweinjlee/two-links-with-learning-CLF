@@ -1,22 +1,22 @@
 # two-links-with-learning-CLF
 
-updated on April 24, 2019
+updated on April 25, 2019
 
-### There are two Matlab program in the project:
+### There are two Matlab program in this project:
 
 1. `main.m` is a naive PD feedback controller for two-link manipulator
   
     It is finished. It can be improved by adding feedforward term, but I am not going to do this.
   
   
-2. `main_two_links.m` is an input-output linearization CLF-based controller for two-link manipulator
+2. `main_two_links.m` is an input-output linearization with CLF-based controller for two-link manipulator
   
-    It is developing and there are many problems.
+    It is finished to be able to track a circle trajectory.
   
 
 ### On going works and plans:
 
-1. finish a very basic CLF-based controller[1] for two-link
+1. (finished) finish a very basic CLF-based controller[1] for two-link
 
 2. Model an estimated system by inducing uncertainties
 
