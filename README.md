@@ -9,18 +9,22 @@ updated on April 25, 2019
     It is finished. It can be improved by adding feedforward term, but I am not going to do this.
   
   
-2. `main_two_links.m` is an input-output linearization with CLF-based controller for two-link manipulator
+2. `main_two_links.m` is a CLF-based controller for two-link manipulator
   
-    It is finished to be able to track a circle trajectory.
+    It is not finished yet.
+
+    New Features: tuning the control parameter by epsilon for rapid exponentially stability[1].
   
 
 ### On going works and plans:
 
-1. (finished) finish a very basic CLF-based controller[1] for two-link
+1. (finished) finish an input-output linearization system with PD controller
 
-2. Model an estimated system by inducing uncertainties
+2. Coding a optimization algorithm for CLF-based controller[1] design.
 
-3. Using the episodic learning method to train CLF for the estimated system control[2]
+3. Model an estimated system by inducing uncertainties
+
+4. Using the episodic learning method to train CLF for the estimated system control[2]
 
 
 ### References:

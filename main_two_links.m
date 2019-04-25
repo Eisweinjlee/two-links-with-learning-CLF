@@ -13,7 +13,8 @@ Initialization;
 %% Control design parameters
 K_p = 120;  % PD controller P gain
 K_d = 20; % PD controller D gain
-epsi = 0.4; % Rapidly exponentially stabilizing
+epsi = 0.2; % Rapidly exponentially stabilizing
+
 n = 2; % number of states
 m = 2; % number of inputs
 Q = eye(n); % Positive definite Q for CARE
@@ -24,9 +25,12 @@ tfinish = 0.5;
 dt = 1e-3;
 
 %% Trajectory data
+AngularVel = 1.8*pi; % angular velocity
+TrajRadius = 1; % circular trajectory radius
 t = tstart:dt:tfinish;
-DesiredTrajectory = [cos(t);sin(t)];
-dDesiredTrajectory = [-sin(t);cos(t)];
+DesiredTrajectory = TrajRadius .* [cos(AngularVel*t);sin(AngularVel*t)];
+dDesiredTrajectory = TrajRadius .* [-AngularVel*sin(AngularVel*t);
+    AngularVel*cos(AngularVel*t)];
 ddDesiredTrajectory = zeros(2,length(t));
 
 % DesiredTrajectory = [0.7*ones(1,length(t));
@@ -62,8 +66,7 @@ for t = tstart:dt:tfinish
     % Manipulator dynamics: M*ddq + H = Tau
     [M,H] = SystemMatrix(X);
     
-    % Input-output linearization (error-based)
-    % output system: d_eta = f - dr + g * Tau
+    % error system: d_eta = f - dr + g * Tau
     eta = [EOF(1) - DesiredTrajectory(1,i);
         EOF(2) - DesiredTrajectory(2,i);
         dEOF(1) - dDesiredTrajectory(1,i);
@@ -73,16 +76,14 @@ for t = tstart:dt:tfinish
     f = [ - dth1*(cos(th1 + th2)/2 + cos(th1)) - (dth2*cos(th1 + th2))/2, -(cos(th1 + th2)*(dth1 + dth2))/2;
         - dth1*(sin(th1 + th2)/2 + sin(th1)) - (dth2*sin(th1 + th2))/2, -(sin(th1 + th2)*(dth1 + dth2))/2] * [dth1; dth2] - [ - sin(th1 + th2)/2 - sin(th1), -sin(th1 + th2)/2;
         cos(th1 + th2)/2 + cos(th1),  cos(th1 + th2)/2] * inv(M) * H;
-    % TODO: Singularity??????? BUG in the equation coding, Check later!
-    % TODO: the input needs the matrix B?
     
     g = [ - sin(th1 + th2)/2 - sin(th1), -sin(th1 + th2)/2;
         cos(th1 + th2)/2 + cos(th1),  cos(th1 + th2)/2] * inv(M);
 
+    % Input-output linearization
+    v = - epsi^-2 * K_p * (eta(1:2)) - epsi^-1 * K_d * (eta(3:4)); % feedback
     
-    v = - epsi^-2 * K_p * (eta(1:2)) - epsi^-1 * K_d * (eta(3:4)); % output feedback
-    
-    Tau = pinv(g,3e-3) * (-f + v + ddDesiredTrajectory(i));
+    Tau = pinv(g,3e-3) * (-f + v + ddDesiredTrajectory(i)); % input (avoid singularity)
     
     % Input
     X = X + [dth1; dth2; inv(M)*(Tau - H)]*dt;
