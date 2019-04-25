@@ -4,12 +4,12 @@ updated on April 25, 2019
 
 ### There are two Matlab program in this project:
 
-1. `main.m` is a naive PD feedback controller for two-link manipulator
+1. `main_naive.m` is a naive PD feedback controller for two-link manipulator
   
     It is finished. It can be improved by adding feedforward term, but I am not going to do this.
   
   
-2. `main_two_links.m` is a CLF-based controller for two-link manipulator
+2. `main_clf.m` is a CLF-based controller for two-link manipulator
   
     It is not finished yet.
 
