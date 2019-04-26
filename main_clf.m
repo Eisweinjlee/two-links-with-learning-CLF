@@ -10,10 +10,12 @@ clc
 %% Initialization.m subscript contains the parameters
 Initialization;
 
-%% Control design parameters
+%% Controller parameters
 K_p = 120;  % PD controller P gain
 K_d = 20; % PD controller D gain
-epsi = 0.2; % Rapidly exponentially stabilizing
+
+% rapid exponentially stablizing(RES)
+epsi = 0.2; 
 
 n = 2; % number of states
 m = 2; % number of inputs
@@ -25,14 +27,17 @@ tfinish = 0.5;
 dt = 1e-3;
 
 %% Trajectory data
-AngularVel = 1.8*pi; % angular velocity
-TrajRadius = 1; % circular trajectory radius
 t = tstart:dt:tfinish;
+
+% circular trajectory
+AngularVel = pi;    % angular velocity
+TrajRadius = 1.45;         % trajectory radius
 DesiredTrajectory = TrajRadius .* [cos(AngularVel*t);sin(AngularVel*t)];
 dDesiredTrajectory = TrajRadius .* [-AngularVel*sin(AngularVel*t);
     AngularVel*cos(AngularVel*t)];
 ddDesiredTrajectory = zeros(2,length(t));
 
+% % fixed point 
 % DesiredTrajectory = [0.7*ones(1,length(t));
 %     1*ones(1,length(t))];
 % dDesiredTrajectory = zeros(2,length(t));
@@ -49,7 +54,7 @@ for t = tstart:dt:tfinish
     th1 = X(1);
     th2 = X(2);
     dth1 = X(3);
-    dth2 = X(4);    %% TODO : Don't want to see them
+    dth2 = X(4);    % TODO : Don't want to see them
     
     % Output (position of EOF)
     [joint2, EOF, dEOF] = TwoLinkOutput(X);
@@ -67,10 +72,8 @@ for t = tstart:dt:tfinish
     [M,H] = SystemMatrix(X);
     
     % error system: d_eta = f - dr + g * Tau
-    eta = [EOF(1) - DesiredTrajectory(1,i);
-        EOF(2) - DesiredTrajectory(2,i);
-        dEOF(1) - dDesiredTrajectory(1,i);
-        dEOF(2) - dDesiredTrajectory(2,i)];
+    eta = [EOF - DesiredTrajectory(:,i);
+        dEOF - dDesiredTrajectory(:,i)];
     eta_out = [eta_out , eta]; % debug
     
     f = [ - dth1*(cos(th1 + th2)/2 + cos(th1)) - (dth2*cos(th1 + th2))/2, -(cos(th1 + th2)*(dth1 + dth2))/2;
@@ -79,11 +82,13 @@ for t = tstart:dt:tfinish
     
     g = [ - sin(th1 + th2)/2 - sin(th1), -sin(th1 + th2)/2;
         cos(th1 + th2)/2 + cos(th1),  cos(th1 + th2)/2] * inv(M);
+    
+    dot_r = ddDesiredTrajectory(:,i);
 
     % Input-output linearization
-    v = - epsi^-2 * K_p * (eta(1:2)) - epsi^-1 * K_d * (eta(3:4)); % feedback
-    
-    Tau = pinv(g,3e-3) * (-f + v + ddDesiredTrajectory(i)); % input (avoid singularity)
+    v = - epsi^-2 * K_p * (eta(1:2)) - epsi^-1 * K_d * (eta(3:4)); % output feedback
+    Tau = pinv(g,3e-3) * (-f + v + dot_r); % input (avoid singularity)
+    % TODO: Saturation Controller(higher and lower bound!)
     
     % Input
     X = X + [dth1; dth2; inv(M)*(Tau - H)]*dt;
@@ -91,6 +96,10 @@ for t = tstart:dt:tfinish
     
     i = i + 1;
 end
+
+%% QP Controller for CLF-based
+% TODO: Code the QP controller!!!
+
 
 %% Debug plotting
 
