@@ -1,6 +1,6 @@
 # two-links-with-learning-CLF
 
-updated on April 25, 2019
+updated on July 27, 2019. This project is paused for the time being.
 
 ### There are two Matlab program in this project:
 
